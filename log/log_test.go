@@ -11,11 +11,7 @@ func TestLog(t *testing.T) {
 		Level:  "debug",
 		Format: "json",
 	}
-	lg, err := New(cfg)
-	if err != nil {
-		panic(err)
-	}
-	SetLogger(lg)
+	SetLogger(MustNew(cfg))
 
 	Debug("Testing")
 	Debugf("Testing %s", "str")
@@ -28,4 +24,10 @@ func TestLog(t *testing.T) {
 
 	Error("Testing")
 	Errorf("Testing %s", "str")
+
+	lg := With(String("str", "str"))
+	lg.Info("info")
+
+	lg = lg.With(Int("int", 1))
+	lg.Info("info")
 }
