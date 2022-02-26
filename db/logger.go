@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -23,7 +24,7 @@ type Logger struct {
 func NewLogger(cfg LogConfig) *Logger {
 	return &Logger{
 		LogConfig: cfg,
-		base:      log.L().Named("gorm"),
+		base:      log.L().Named("[GORM]"),
 	}
 }
 
@@ -37,21 +38,21 @@ func (l *Logger) Info(_ context.Context, str string, args ...interface{}) {
 	if l.Level < glog.Info {
 		return
 	}
-	l.base.WithOptions(log.WithCaller(false)).Sugar().Infof(str, args...)
+	l.base.WithOptions(log.WithCaller(false)).Info(fmt.Sprintf(str, args...))
 }
 
 func (l *Logger) Warn(_ context.Context, str string, args ...interface{}) {
 	if l.Level < glog.Warn {
 		return
 	}
-	l.base.WithOptions(log.WithCaller(false)).Sugar().Warnf(str, args...)
+	l.base.WithOptions(log.WithCaller(false)).Info(fmt.Sprintf(str, args...))
 }
 
 func (l *Logger) Error(_ context.Context, str string, args ...interface{}) {
 	if l.Level < glog.Error {
 		return
 	}
-	l.base.WithOptions(log.WithCaller(false)).Sugar().Errorf(str, args...)
+	l.base.WithOptions(log.WithCaller(false)).Info(fmt.Sprintf(str, args...))
 }
 
 func (l *Logger) Trace(_ context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
@@ -60,15 +61,16 @@ func (l *Logger) Trace(_ context.Context, begin time.Time, fc func() (sql string
 	}
 
 	elapsed := time.Since(begin)
+	lg := l.base.WithOptions(log.AddCallerSkip(2))
 	switch {
 	case err != nil && l.Level >= glog.Error && (!errors.Is(err, ErrRecordNotFound) || !l.IgnoreRecordNotFoundError):
 		sql, rows := fc()
-		l.base.WithOptions(log.AddCallerSkip(2)).Error("trace", log.Err(err), log.Duration("elapsed", elapsed), log.Int64("rows", rows), log.String("sql", sql))
+		lg.Error("trace", err, log.Duration("elapsed", elapsed), log.Int64("rows", rows), log.String("sql", sql))
 	case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.Level >= glog.Warn:
 		sql, rows := fc()
-		l.base.WithOptions(log.AddCallerSkip(2)).Warn("slow-sql", log.Duration("elapsed", elapsed), log.Int64("rows", rows), log.String("sql", sql))
+		lg.Warn("slow-sql", log.Duration("elapsed", elapsed), log.Int64("rows", rows), log.String("sql", sql))
 	case l.Level == glog.Info:
 		sql, rows := fc()
-		l.base.WithOptions(log.AddCallerSkip(2)).Info("trace", log.Duration("elapsed", elapsed), log.Int64("rows", rows), log.String("sql", sql))
+		lg.Info("trace", log.Duration("elapsed", elapsed), log.Int64("rows", rows), log.String("sql", sql))
 	}
 }

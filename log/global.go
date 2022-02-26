@@ -6,7 +6,7 @@ import (
 
 var (
 	mu     sync.Mutex
-	global = MustNew(Config{
+	global = New(Config{
 		Level: "info",
 	})
 )
@@ -18,46 +18,27 @@ func SetLogger(lg *Logger) {
 	global = lg
 }
 
-func Debug(msg string, fields ...Field) {
-	global.WithOptions(AddCallerSkip(1)).Debug(msg, fields...)
-}
-
-func Debugf(format string, args ...interface{}) {
-	global.WithOptions(AddCallerSkip(1)).Sugar().Debugf(format, args...)
-}
-
 func Info(msg string, fields ...Field) {
-	global.WithOptions(AddCallerSkip(1)).Info(msg, fields...)
-}
-
-func Infof(format string, args ...interface{}) {
-	global.WithOptions(AddCallerSkip(1)).Sugar().Infof(format, args...)
+	global.base.Info(msg, fields...)
 }
 
 func Warn(msg string, fields ...Field) {
-	global.WithOptions(AddCallerSkip(1)).Warn(msg, fields...)
+	global.base.Warn(msg, fields...)
 }
 
-func Warnf(format string, args ...interface{}) {
-	global.WithOptions(AddCallerSkip(1)).Sugar().Warnf(format, args...)
-}
-
-func Error(msg string, fields ...Field) {
-	global.WithOptions(AddCallerSkip(1)).Error(msg, fields...)
-}
-
-func Errorf(format string, args ...interface{}) {
-	global.WithOptions(AddCallerSkip(1)).Sugar().Errorf(format, args...)
+func Error(msg string, err error, fields ...Field) {
+	fields = append(fields, Err(err))
+	global.base.Error(msg, fields...)
 }
 
 func With(fields ...Field) *Logger {
-	return global.With(fields...)
+	return &Logger{
+		base:      global.base.With(fields...),
+		ctx:       global.ctx,
+		ctxFields: global.ctxFields,
+	}
 }
 
 func L() *Logger {
 	return global
-}
-
-func Sync() error {
-	return global.Sync()
 }

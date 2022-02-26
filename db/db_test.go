@@ -24,10 +24,7 @@ func TestDB(t *testing.T) {
 	})
 
 	out := make(map[string]interface{})
-	err := db.Raw("select sleep(1)").Scan(&out).Error
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	db.Clauses()
+	db.Raw("select sleep(1)").Scan(&out)
+	db.Raw("select 1").Scan(&out)
+	db.Raw("mock syntax error").Scan(&out)
 }
