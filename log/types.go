@@ -28,18 +28,19 @@ type (
 )
 
 var (
-	Any      = zap.Any
-	Skip     = zap.Skip
-	Bool     = zap.Bool
-	Duration = zap.Duration
-	Float64  = zap.Float64
-	Int      = zap.Int
-	Int32    = zap.Int32
-	Int64    = zap.Int64
-	String   = zap.String
-	Time     = zap.Time
-	Uint     = zap.Uint
-	Err      = zap.Error
+	Any        = zap.Any
+	Skip       = zap.Skip
+	ByteString = zap.ByteString
+	Bool       = zap.Bool
+	Duration   = zap.Duration
+	Float64    = zap.Float64
+	Int        = zap.Int
+	Int32      = zap.Int32
+	Int64      = zap.Int64
+	String     = zap.String
+	Time       = zap.Time
+	Uint       = zap.Uint
+	Err        = zap.Error
 
 	AddSync               = zapcore.AddSync
 	NewCore               = zapcore.NewCore
