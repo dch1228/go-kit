@@ -80,7 +80,7 @@ func (c *Kafka) Stop(_ context.Context) error {
 	for _, subscriber := range c.subscribers {
 		c.log.Info("closing consumers", log.String("topic", subscriber.topics[0]))
 		if err := subscriber.cg.Close(); err != nil {
-			c.log.Error("close consume error", err)
+			c.log.Error("close consume error", err, log.String("topic", subscriber.topics[0]))
 		}
 	}
 	return nil
