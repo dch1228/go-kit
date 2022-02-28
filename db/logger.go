@@ -34,34 +34,34 @@ func (l *Logger) LogMode(level glog.LogLevel) glog.Interface {
 	return &newlogger
 }
 
-func (l *Logger) Info(_ context.Context, str string, args ...interface{}) {
+func (l *Logger) Info(ctx context.Context, str string, args ...interface{}) {
 	if l.Level < glog.Info {
 		return
 	}
-	l.base.WithOptions(log.WithCaller(false)).Info(fmt.Sprintf(str, args...))
+	l.base.WithOptions(log.WithCaller(false)).WithCtx(ctx).Info(fmt.Sprintf(str, args...))
 }
 
-func (l *Logger) Warn(_ context.Context, str string, args ...interface{}) {
+func (l *Logger) Warn(ctx context.Context, str string, args ...interface{}) {
 	if l.Level < glog.Warn {
 		return
 	}
-	l.base.WithOptions(log.WithCaller(false)).Info(fmt.Sprintf(str, args...))
+	l.base.WithOptions(log.WithCaller(false)).WithCtx(ctx).Info(fmt.Sprintf(str, args...))
 }
 
-func (l *Logger) Error(_ context.Context, str string, args ...interface{}) {
+func (l *Logger) Error(ctx context.Context, str string, args ...interface{}) {
 	if l.Level < glog.Error {
 		return
 	}
-	l.base.WithOptions(log.WithCaller(false)).Info(fmt.Sprintf(str, args...))
+	l.base.WithOptions(log.WithCaller(false)).WithCtx(ctx).Info(fmt.Sprintf(str, args...))
 }
 
-func (l *Logger) Trace(_ context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
+func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
 	if l.Level <= glog.Silent {
 		return
 	}
 
 	elapsed := time.Since(begin)
-	lg := l.base.WithOptions(log.AddCallerSkip(2))
+	lg := l.base.WithOptions(log.AddCallerSkip(2)).WithCtx(ctx)
 	switch {
 	case err != nil && l.Level >= glog.Error && (!errors.Is(err, ErrRecordNotFound) || !l.IgnoreRecordNotFoundError):
 		sql, rows := fc()
