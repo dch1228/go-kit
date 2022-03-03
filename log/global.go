@@ -1,6 +1,7 @@
 package log
 
 import (
+	"context"
 	"sync"
 )
 
@@ -37,6 +38,10 @@ func With(fields ...Field) *Logger {
 		ctx:       global.ctx,
 		ctxFields: global.ctxFields,
 	}
+}
+
+func WithCtx(ctx context.Context) *Logger {
+	return global.WithCtx(ctx)
 }
 
 func L() *Logger {

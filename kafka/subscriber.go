@@ -2,8 +2,10 @@ package kafka
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Shopify/sarama"
+
 	"github.com/dch1228/go-kit/log"
 )
 
@@ -46,14 +48,18 @@ func applyMiddleware(h HandlerFunc, middleware ...MiddlewareFunc) HandlerFunc {
 func Logger() MiddlewareFunc {
 	return func(next HandlerFunc) HandlerFunc {
 		return func(msg *Message) {
-			log.Info("mock handler",
+			start := time.Now()
+
+			next(msg)
+
+			log.WithCtx(msg.ctx).Info("handle message",
 				log.String("topic", msg.Topic()),
 				log.Int32("partition", msg.Partition()),
-				log.Int64("partition", msg.Offset()),
+				log.Int64("offset", msg.Offset()),
 				log.ByteString("key", msg.Key()),
 				log.ByteString("msg", msg.Value()),
+				log.Duration("latency", time.Since(start)),
 			)
-			next(msg)
 		}
 	}
 }
@@ -68,10 +74,18 @@ func Recovery() MiddlewareFunc {
 						err = fmt.Errorf("%v", r)
 					}
 
-					log.Error("[PANIC RECOVER]", err)
+					log.WithCtx(msg.ctx).Error("[PANIC RECOVER]", err)
 				}
 			}()
 			next(msg)
+		}
+	}
+}
+
+func Trace() MiddlewareFunc {
+	return func(next HandlerFunc) HandlerFunc {
+		return func(msg *Message) {
+			// todo
 		}
 	}
 }

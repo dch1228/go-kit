@@ -1,8 +1,13 @@
 package kafka
 
-import "github.com/Shopify/sarama"
+import (
+	"context"
+
+	"github.com/Shopify/sarama"
+)
 
 type Message struct {
+	ctx     context.Context
 	msg     *sarama.ConsumerMessage
 	session sarama.ConsumerGroupSession
 }

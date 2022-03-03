@@ -11,7 +11,6 @@ func mockHandler(msg *Message) {
 
 func panicHandler(msg *Message) {
 	panic("panic")
-	msg.Ack()
 }
 
 func TestKafka(t *testing.T) {
@@ -34,7 +33,7 @@ func TestRecovery(t *testing.T) {
 		BootstrapServers: []string{"127.0.0.1:9092"},
 	})
 
-	k.Use(Recovery(), Logger())
+	k.Use(Logger(), Recovery())
 
 	k.Subscribe(ConsumerConfig{
 		GroupID: "test",
