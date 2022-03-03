@@ -13,20 +13,7 @@ type Kafka struct {
 	cfg         Config
 	log         *log.Logger
 	subscribers []*subscriber
-}
-
-type subscriber struct {
-	cg      sarama.ConsumerGroup
-	kConfig *sarama.Config
-	topics  []string
-	groupID string
-	handler *consumerGroupHandler
-}
-
-type Handler func(session sarama.ConsumerGroupSession, msg *sarama.ConsumerMessage)
-
-type consumerGroupHandler struct {
-	handler Handler
+	middleware  []MiddlewareFunc
 }
 
 func New(cfg Config) *Kafka {
@@ -37,26 +24,31 @@ func New(cfg Config) *Kafka {
 	}
 }
 
-func (c *Kafka) Subscribe(cfg ConsumerConfig, handler Handler) {
+func (k *Kafka) Use(middleware ...MiddlewareFunc) {
+	k.middleware = append(k.middleware, middleware...)
+}
+
+func (k *Kafka) Subscribe(cfg ConsumerConfig, handler HandlerFunc) {
 	kConfig := sarama.NewConfig()
 
-	c.subscribers = append(c.subscribers, &subscriber{
+	k.subscribers = append(k.subscribers, &subscriber{
 		kConfig: kConfig,
 		topics:  []string{cfg.Topic},
 		groupID: cfg.GroupID,
 		handler: &consumerGroupHandler{
+			k:       k,
 			handler: handler,
 		},
 	})
 }
 
-func (c *Kafka) Start(_ context.Context) error {
+func (k *Kafka) Start(_ context.Context) error {
 	eg := errgroup.Group{}
-	for _, subscriber := range c.subscribers {
+	for _, subscriber := range k.subscribers {
 		subscriber := subscriber
 		eg.Go(func() error {
 			cg, err := sarama.NewConsumerGroup(
-				c.cfg.BootstrapServers,
+				k.cfg.BootstrapServers,
 				subscriber.groupID,
 				subscriber.kConfig,
 			)
@@ -76,21 +68,12 @@ func (c *Kafka) Start(_ context.Context) error {
 	return eg.Wait()
 }
 
-func (c *Kafka) Stop(_ context.Context) error {
-	for _, subscriber := range c.subscribers {
-		c.log.Info("closing consumers", log.String("topic", subscriber.topics[0]))
+func (k *Kafka) Stop(_ context.Context) error {
+	for _, subscriber := range k.subscribers {
+		k.log.Info("closing consumers", log.String("topic", subscriber.topics[0]))
 		if err := subscriber.cg.Close(); err != nil {
-			c.log.Error("close consume error", err, log.String("topic", subscriber.topics[0]))
+			k.log.Error("close consume error", err, log.String("topic", subscriber.topics[0]))
 		}
-	}
-	return nil
-}
-
-func (*consumerGroupHandler) Setup(_ sarama.ConsumerGroupSession) error   { return nil }
-func (*consumerGroupHandler) Cleanup(_ sarama.ConsumerGroupSession) error { return nil }
-func (h *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
-	for msg := range claim.Messages() {
-		h.handler(session, msg)
 	}
 	return nil
 }
