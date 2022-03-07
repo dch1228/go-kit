@@ -5,6 +5,7 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
@@ -13,13 +14,17 @@ import (
 	"github.com/dch1228/go-kit/log"
 )
 
+var (
+	tp *tracesdk.TracerProvider
+)
+
 func Init(cfg Config) error {
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(cfg.Endpoint)))
 	if err != nil {
 		return err
 	}
 
-	tp := tracesdk.NewTracerProvider(
+	tp = tracesdk.NewTracerProvider(
 		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(cfg.SamplerRatio))),
 		tracesdk.WithBatcher(exp),
 		tracesdk.WithResource(resource.NewSchemaless(
@@ -27,7 +32,12 @@ func Init(cfg Config) error {
 		)),
 	)
 	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}))
 	return nil
+}
+
+func Shutdown(ctx context.Context) error {
+	return tp.Shutdown(ctx)
 }
 
 func TraceID() log.CtxField {

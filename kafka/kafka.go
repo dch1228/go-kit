@@ -10,17 +10,17 @@ import (
 )
 
 type Kafka struct {
-	cfg         Config
-	log         *log.Logger
-	subscribers []*subscriber
-	middleware  []MiddlewareFunc
+	cfg        Config
+	log        *log.Logger
+	consumers  []*consumer
+	middleware []MiddlewareFunc
 }
 
 func New(cfg Config) *Kafka {
 	return &Kafka{
-		cfg:         cfg,
-		log:         log.L().Named("[kafka]"),
-		subscribers: make([]*subscriber, 0, 10),
+		cfg:       cfg,
+		log:       log.L().Named("[kafka]"),
+		consumers: make([]*consumer, 0, 10),
 	}
 }
 
@@ -31,7 +31,7 @@ func (k *Kafka) Use(middleware ...MiddlewareFunc) {
 func (k *Kafka) Subscribe(cfg ConsumerConfig, handler HandlerFunc) {
 	kConfig := sarama.NewConfig()
 
-	k.subscribers = append(k.subscribers, &subscriber{
+	k.consumers = append(k.consumers, &consumer{
 		kConfig: kConfig,
 		topics:  []string{cfg.Topic},
 		groupID: cfg.GroupID,
@@ -44,21 +44,21 @@ func (k *Kafka) Subscribe(cfg ConsumerConfig, handler HandlerFunc) {
 
 func (k *Kafka) Start(_ context.Context) error {
 	eg := errgroup.Group{}
-	for _, subscriber := range k.subscribers {
-		subscriber := subscriber
+	for _, consumer := range k.consumers {
+		consumer := consumer
 		eg.Go(func() error {
 			cg, err := sarama.NewConsumerGroup(
 				k.cfg.BootstrapServers,
-				subscriber.groupID,
-				subscriber.kConfig,
+				consumer.groupID,
+				consumer.kConfig,
 			)
 			if err != nil {
 				return err
 			}
 			ctx := context.Background()
-			subscriber.cg = cg
+			consumer.cg = cg
 			for {
-				if err := cg.Consume(ctx, subscriber.topics, subscriber.handler); err != nil {
+				if err := cg.Consume(ctx, consumer.topics, consumer.handler); err != nil {
 					return err
 				}
 			}
@@ -69,10 +69,10 @@ func (k *Kafka) Start(_ context.Context) error {
 }
 
 func (k *Kafka) Stop(_ context.Context) error {
-	for _, subscriber := range k.subscribers {
-		k.log.Info("closing consumers", log.String("topic", subscriber.topics[0]))
-		if err := subscriber.cg.Close(); err != nil {
-			k.log.Error("close consume error", err, log.String("topic", subscriber.topics[0]))
+	for _, consumer := range k.consumers {
+		k.log.Info("closing consumer", log.String("topic", consumer.topics[0]))
+		if err := consumer.cg.Close(); err != nil {
+			k.log.Error("close consume error", err, log.String("topic", consumer.topics[0]))
 		}
 	}
 	return nil
