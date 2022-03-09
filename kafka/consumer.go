@@ -28,6 +28,7 @@ type consumer struct {
 
 type consumerGroupHandler struct {
 	k       *Kafka
+	c       *consumer
 	handler HandlerFunc
 }
 
@@ -39,6 +40,7 @@ func (h *consumerGroupHandler) ConsumeClaim(session sarama.ConsumerGroupSession,
 			msg:     msg,
 			session: session,
 			ctx:     context.Background(),
+			groupID: h.c.groupID,
 		})
 	}
 	return nil

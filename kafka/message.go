@@ -10,6 +10,7 @@ type Message struct {
 	ctx     context.Context
 	msg     *sarama.ConsumerMessage
 	session sarama.ConsumerGroupSession
+	groupID string
 }
 
 type ProducerMessageCarrier struct {
@@ -38,6 +39,10 @@ func (msg *Message) Key() []byte {
 
 func (msg *Message) Value() []byte {
 	return msg.msg.Value
+}
+
+func (msg *Message) GroupID() string {
+	return msg.groupID
 }
 
 func (msg *Message) Get(key string) string {

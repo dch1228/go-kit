@@ -31,15 +31,18 @@ func (k *Kafka) Use(middleware ...MiddlewareFunc) {
 func (k *Kafka) Subscribe(cfg ConsumerConfig, handler HandlerFunc) {
 	kConfig := sarama.NewConfig()
 
-	k.consumers = append(k.consumers, &consumer{
+	consumer := &consumer{
 		kConfig: kConfig,
 		topics:  []string{cfg.Topic},
 		groupID: cfg.GroupID,
-		handler: &consumerGroupHandler{
-			k:       k,
-			handler: handler,
-		},
-	})
+	}
+	consumer.handler = &consumerGroupHandler{
+		k:       k,
+		c:       consumer,
+		handler: handler,
+	}
+
+	k.consumers = append(k.consumers, consumer)
 }
 
 func (k *Kafka) Start(_ context.Context) error {
