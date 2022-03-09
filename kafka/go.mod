@@ -4,8 +4,8 @@ go 1.17
 
 require (
 	github.com/Shopify/sarama v1.32.0
-	github.com/dch1228/go-kit/log v0.0.0-00010101000000-000000000000
-	github.com/dch1228/go-kit/tracing v0.0.0-00010101000000-000000000000
+	github.com/dch1228/go-kit/log v0.0.0-20220309054955-40c826f26343
+	github.com/dch1228/go-kit/tracing v0.0.0-20220309054955-40c826f26343
 	github.com/prometheus/client_golang v1.12.1
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/trace v1.4.1
@@ -47,7 +47,3 @@ require (
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
-
-replace github.com/dch1228/go-kit/log => ../log
-
-replace github.com/dch1228/go-kit/tracing => ../tracing

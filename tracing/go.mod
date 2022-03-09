@@ -3,7 +3,7 @@ module github.com/dch1228/go-kit/tracing
 go 1.17
 
 require (
-	github.com/dch1228/go-kit/log v0.0.0-00010101000000-000000000000
+	github.com/dch1228/go-kit/log v0.0.0-20220309054955-40c826f26343
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/exporters/jaeger v1.4.1
 	go.opentelemetry.io/otel/sdk v1.4.1
@@ -19,5 +19,3 @@ require (
 	golang.org/x/sys v0.0.0-20210510120138-977fb7262007 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
-
-replace github.com/dch1228/go-kit/log => ../log

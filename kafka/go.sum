@@ -64,6 +64,10 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dch1228/go-kit/log v0.0.0-20220309054955-40c826f26343 h1:3PpN8fHdgMNjdWj7Udvj7XY4JCFsHTPhEV3/iuIu5v0=
+github.com/dch1228/go-kit/log v0.0.0-20220309054955-40c826f26343/go.mod h1:teBWc4HuxvfUHyg0rOeGLfYrGdfIvx6chEuXVmx5JGk=
+github.com/dch1228/go-kit/tracing v0.0.0-20220309054955-40c826f26343 h1:M5WML0lyl7T5ipPq+EHdNqA3Hi9X5m/It/MUwUEY5/U=
+github.com/dch1228/go-kit/tracing v0.0.0-20220309054955-40c826f26343/go.mod h1:lOYqQ6flHAWNYClA1dPJ13cbQdT/BsRt6SlsdMjbUak=
 github.com/eapache/go-resiliency v1.2.0 h1:v7g92e/KSN71Rq7vSThKaWIq68fL4YHvWyiUKorFR1Q=
 github.com/eapache/go-resiliency v1.2.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 h1:YEetp8/yCZMuEPMUDHG0CW/brkkEp8mzqk2+ODEitlw=
