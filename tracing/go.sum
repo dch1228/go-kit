@@ -5,8 +5,8 @@ github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZx
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dch1228/go-kit/log v0.0.0-20220309054955-40c826f26343 h1:3PpN8fHdgMNjdWj7Udvj7XY4JCFsHTPhEV3/iuIu5v0=
-github.com/dch1228/go-kit/log v0.0.0-20220309054955-40c826f26343/go.mod h1:teBWc4HuxvfUHyg0rOeGLfYrGdfIvx6chEuXVmx5JGk=
+github.com/dch1228/go-kit/log v0.0.0-20220309072738-a4f088c8e8b4 h1:xILvOCTP073Ln/CoC9OqmgX7ZdQ8zDQDbEkcCBOKwqg=
+github.com/dch1228/go-kit/log v0.0.0-20220309072738-a4f088c8e8b4/go.mod h1:teBWc4HuxvfUHyg0rOeGLfYrGdfIvx6chEuXVmx5JGk=
 github.com/go-logr/logr v1.2.2 h1:ahHml/yUpnlb96Rp8HCvtYVPY8ZYpxq3g7UYchIYwbs=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/stdr v1.2.2 h1:hSWxHoqTgW2S2qGc0LTAI563KZ5YKYRhT3MFKZMbjag=

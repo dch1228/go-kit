@@ -3,7 +3,7 @@ module github.com/dch1228/go-kit/tracing
 go 1.17
 
 require (
-	github.com/dch1228/go-kit/log v0.0.0-20220309054955-40c826f26343
+	github.com/dch1228/go-kit/log v0.0.0-20220309072738-a4f088c8e8b4
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/exporters/jaeger v1.4.1
 	go.opentelemetry.io/otel/sdk v1.4.1

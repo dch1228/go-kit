@@ -3,7 +3,7 @@ module github.com/dch1228/go-kit/db
 go 1.17
 
 require (
-	github.com/dch1228/go-kit/log v0.0.0-00010101000000-000000000000
+	github.com/dch1228/go-kit/log v0.0.0-20220309072738-a4f088c8e8b4
 	gorm.io/driver/mysql v1.2.3
 	gorm.io/gorm v1.22.5
 )
@@ -17,5 +17,3 @@ require (
 	go.uber.org/zap v1.21.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
-
-replace github.com/dch1228/go-kit/log => ../log
