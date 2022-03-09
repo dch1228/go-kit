@@ -33,7 +33,7 @@ func TestSendMessage(t *testing.T) {
 	defer span.End()
 
 	msg := &sarama.ProducerMessage{
-		Topic: "test",
+		Topic: "topic",
 		Key:   sarama.StringEncoder("test"),
 		Value: sarama.StringEncoder("test"),
 	}

@@ -45,6 +45,10 @@ func (msg *Message) GroupID() string {
 	return msg.groupID
 }
 
+func (msg *Message) Ctx() context.Context {
+	return msg.ctx
+}
+
 func (msg *Message) Get(key string) string {
 	for _, h := range msg.msg.Headers {
 		if h != nil && string(h.Key) == key {

@@ -60,12 +60,16 @@ func Logger() MiddlewareFunc {
 
 			next(msg)
 
-			log.WithCtx(msg.ctx).Info("handle message",
-				log.String("topic", msg.Topic()),
-				log.Int32("partition", msg.Partition()),
-				log.Int64("offset", msg.Offset()),
-				log.Duration("latency", time.Since(start)),
-			)
+			log.
+				WithCtx(msg.ctx).
+				WithOptions(log.WithCaller(false)).
+				Info(
+					"handle message",
+					log.String("topic", msg.Topic()),
+					log.Int32("partition", msg.Partition()),
+					log.Int64("offset", msg.Offset()),
+					log.Duration("latency", time.Since(start)),
+				)
 		}
 	}
 }

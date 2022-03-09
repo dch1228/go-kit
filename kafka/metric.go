@@ -15,7 +15,7 @@ var (
 	messageDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name:    "message_duration_millisecond",
 		Help:    "message_duration_millisecond",
-		Buckets: prometheus.LinearBuckets(100, 500, 5),
+		Buckets: []float64{100, 500, 1000, 2000, 3000, 5000},
 	}, []string{"topic", "group_id"})
 )
 
