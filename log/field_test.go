@@ -3,25 +3,22 @@ package log
 import (
 	"context"
 	"testing"
+
+	"go.opentelemetry.io/otel"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func TestCtxField(t *testing.T) {
-	lg := New(Config{
-		Level: "info",
+	otel.SetTracerProvider(tracesdk.NewTracerProvider())
+
+	MustSetup(Config{
+		Level:       "info",
+		EnableTrace: true,
 	})
 
-	lg = lg.WithCtxFields(
-		func() CtxField {
-			return func(ctx context.Context) Field {
-				val := ctx.Value("test")
-				if val != nil {
-					return String("ctxfield", val.(string))
-				}
-				return Skip()
-			}
-		}())
+	tr := otel.Tracer("TestCtxField")
+	ctx, span := tr.Start(context.Background(), "TestCtxField")
+	defer span.End()
 
-	ctx := context.WithValue(context.Background(), "test", "test")
-	lg.WithCtx(ctx).Info("test")
-	lg.WithCtx(context.Background()).Info("test")
+	WithCtx(ctx).Info("test")
 }

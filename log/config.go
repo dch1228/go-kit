@@ -1,17 +1,17 @@
 package log
 
 type Config struct {
-	Level           string `mapstructure:"level"`
-	Format          string `mapstructure:"format"`
-	OutputPath      string `mapstructure:"output-path"`
-	ErrorOutputPath string `mapstructure:"error-output-path"`
+	Level  string `validate:"oneof=info warn error" default:"info"`
+	Format string `validate:"oneof=text json" default:"text"`
 
-	File FileConfig `mapstructure:"file"`
+	EnableTrace bool `default:"true"`
+
+	File FileConfig
 }
 
 type FileConfig struct {
-	Filename   string `mapstructure:"filename"`
-	MaxSize    int    `mapstructure:"max-size"`
-	MaxAge     int    `mapstructure:"max-age"`
-	MaxBackups int    `mapstructure:"max-backups"`
+	Filename   string
+	MaxSize    int
+	MaxAge     int
+	MaxBackups int
 }

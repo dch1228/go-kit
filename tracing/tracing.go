@@ -9,16 +9,13 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
-	"go.opentelemetry.io/otel/trace"
-
-	"github.com/dch1228/go-kit/log"
 )
 
 var (
 	tp *tracesdk.TracerProvider
 )
 
-func Init(cfg Config) error {
+func Setup(cfg Config) error {
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(cfg.Endpoint)))
 	if err != nil {
 		return err
@@ -38,22 +35,4 @@ func Init(cfg Config) error {
 
 func Shutdown(ctx context.Context) error {
 	return tp.Shutdown(ctx)
-}
-
-func TraceID() log.CtxField {
-	return func(ctx context.Context) log.Field {
-		if span := trace.SpanContextFromContext(ctx); span.HasTraceID() {
-			return log.String("trace_id", span.TraceID().String())
-		}
-		return log.Skip()
-	}
-}
-
-func SpanID() log.CtxField {
-	return func(ctx context.Context) log.Field {
-		if span := trace.SpanContextFromContext(ctx); span.HasSpanID() {
-			return log.String("span_id", span.SpanID().String())
-		}
-		return log.Skip()
-	}
 }

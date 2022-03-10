@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 
 	"github.com/dch1228/go-kit/kafka"
 	"github.com/dch1228/go-kit/log"
@@ -11,6 +12,8 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http/pprof"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+var cfg = flag.String("c", "", "Specify the config file")
 
 type Greeting struct {
 	lg *log.Logger

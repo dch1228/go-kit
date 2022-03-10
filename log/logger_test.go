@@ -6,12 +6,10 @@ import (
 )
 
 func TestLog(t *testing.T) {
-	lg := New(Config{
-		Level: "info",
+	MustSetup(Config{
+		Level:       "info",
+		EnableTrace: true,
 	})
-	defer func() { _ = lg.Sync() }()
-
-	SetLogger(lg)
 
 	Info("Info")
 
@@ -19,7 +17,7 @@ func TestLog(t *testing.T) {
 
 	Error("Error", errors.New("test error"))
 
-	lg = With(String("str", "str"))
+	lg := With(String("str", "str"))
 	lg.Info("info")
 
 	lg = lg.With(Int("int", 1))

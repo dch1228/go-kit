@@ -53,10 +53,8 @@ var (
 
 	Open           = zap.Open
 	NewAtomicLevel = zap.NewAtomicLevel
-	ErrorOutput    = zap.ErrorOutput
 	AddCaller      = zap.AddCaller
 	AddCallerSkip  = zap.AddCallerSkip
 	AddStacktrace  = zap.AddStacktrace
 	zapNew         = zap.New
-	WithCaller     = zap.WithCaller
 )

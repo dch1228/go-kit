@@ -2,22 +2,7 @@ package log
 
 import (
 	"context"
-	"sync"
 )
-
-var (
-	mu     sync.Mutex
-	global = New(Config{
-		Level: "info",
-	})
-)
-
-func SetLogger(lg *Logger) {
-	mu.Lock()
-	defer mu.Unlock()
-
-	global = lg
-}
 
 func Info(msg string, fields ...Field) {
 	global.base.Info(msg, fields...)
@@ -42,6 +27,10 @@ func With(fields ...Field) *Logger {
 
 func WithCtx(ctx context.Context) *Logger {
 	return global.WithCtx(ctx)
+}
+
+func Sync() error {
+	return global.Sync()
 }
 
 func L() *Logger {

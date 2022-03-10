@@ -2,7 +2,12 @@ package log
 
 import (
 	"context"
-	"fmt"
+	"sync"
+)
+
+var (
+	once   = sync.Once{}
+	global *Logger
 )
 
 type Logger struct {
@@ -11,51 +16,62 @@ type Logger struct {
 	ctxFields []CtxField
 }
 
-func New(cfg Config) *Logger {
+func Setup(cfg Config) (err error) {
+	once.Do(func() {
+		err = setup(cfg)
+	})
+	return
+}
+
+func setup(cfg Config) error {
 	var (
-		output    WriteSyncer
-		errOutput WriteSyncer
+		output WriteSyncer
 	)
+
 	if cfg.File.Filename != "" {
 		lg := newFileLog(cfg.File)
 		output = AddSync(lg)
 	} else {
 		stdout, _, err := Open([]string{"stdout"}...)
 		if err != nil {
-			panic(fmt.Sprintf("log init error: %s", err))
+			return err
 		}
 		output = stdout
-	}
-
-	if cfg.ErrorOutputPath != "" {
-		errOut, _, err := Open([]string{cfg.ErrorOutputPath}...)
-		if err != nil {
-			panic(fmt.Sprintf("log init error: %s", err))
-		}
-		errOutput = errOut
-	} else {
-		errOutput = output
 	}
 
 	level := NewAtomicLevel()
 	err := level.UnmarshalText([]byte(cfg.Level))
 	if err != nil {
-		panic(fmt.Sprintf("log level error: %s", err))
+		return err
 	}
 
 	opts := append([]zapOption{
-		ErrorOutput(errOutput),
 		AddCaller(),
 		AddCallerSkip(1),
 		AddStacktrace(ErrorLevel),
 	})
 
-	return &Logger{
+	var ctxFields []CtxField
+	if cfg.EnableTrace {
+		ctxFields = append(ctxFields, TraceID(), SpanID())
+	}
+
+	logger := &Logger{
 		base: zapNew(
 			NewCore(newEncoder(cfg), output, level),
 			opts...,
 		),
-		ctx: context.Background(),
+		ctx:       context.Background(),
+		ctxFields: ctxFields,
+	}
+
+	global = logger
+	return nil
+}
+
+func MustSetup(cfg Config) {
+	if err := Setup(cfg); err != nil {
+		panic(err)
 	}
 }
 
