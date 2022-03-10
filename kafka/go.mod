@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/Shopify/sarama v1.32.0
-	github.com/dch1228/go-kit/log v0.0.0-20220309072738-a4f088c8e8b4
+	github.com/dch1228/go-kit v0.0.0-20220310162424-6875fb116ca1
 	github.com/prometheus/client_golang v1.12.1
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/trace v1.4.1
