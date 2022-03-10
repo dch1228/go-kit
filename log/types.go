@@ -56,5 +56,6 @@ var (
 	AddCaller      = zap.AddCaller
 	AddCallerSkip  = zap.AddCallerSkip
 	AddStacktrace  = zap.AddStacktrace
+	WithCaller     = zap.WithCaller
 	zapNew         = zap.New
 )
