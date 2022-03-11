@@ -1,19 +1,20 @@
 package main
 
 import (
-	"context"
 	"flag"
 
+	"github.com/dch1228/go-kit/conf"
 	"github.com/dch1228/go-kit/kafka"
 	"github.com/dch1228/go-kit/log"
-	"github.com/dch1228/go-kit/tracing"
+	"github.com/dch1228/go-kit/profile"
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/go-kratos/kratos/v2/transport/http/pprof"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var cfg = flag.String("c", "", "Specify the config file")
+var cfgPath = flag.String("c", "conf.yaml", "Specify the config file")
+
+type Config struct {
+	conf.ServerConfig
+}
 
 type Greeting struct {
 	lg *log.Logger
@@ -43,47 +44,29 @@ func newKafkaConsumers() *kafka.Kafka {
 	return k
 }
 
-func newMetricServer() *http.Server {
-	srv := http.NewServer(
-		http.Address(":8080"),
-	)
-
-	srv.Handle("/metrics", promhttp.Handler())
-	srv.HandlePrefix("/debug", pprof.NewHandler())
-	return srv
-
-}
-
 func main() {
-	logger := log.New(
-		log.Config{
-			Level: "info",
-		},
-	).WithCtxFields(
-		tracing.TraceID(),
-		tracing.SpanID(),
-	)
-	log.SetLogger(logger)
-	defer func() { _ = logger.Sync() }()
+	flag.Parse()
+	var cfg Config
 
-	if err := tracing.Init(tracing.Config{
-		Name:         "kratos-kafka",
-		Endpoint:     "http://127.0.0.1:14268/api/traces",
-		SamplerRatio: 1,
-	}); err != nil {
-		panic(err)
-	}
-	defer func() { _ = tracing.Shutdown(context.Background()) }()
+	conf.MustLoad(*cfgPath, &cfg)
+
+	// log, trace
+	cfg.MustSetup()
+	defer cfg.Cleanup()
+
+	log.Info("config", log.Any("config", cfg))
 
 	app := kratos.New(
 		kratos.Name("kratos-kafka"),
 		kratos.Server(
 			newKafkaConsumers(),
-			newMetricServer(),
+			profile.New(cfg.Profile),
 		),
 	)
 
 	if err := app.Run(); err != nil {
-		panic(err)
+		log.Error("app shutdown", err)
+	} else {
+		log.Info("app shutdown")
 	}
 }

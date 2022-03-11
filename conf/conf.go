@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/dch1228/go-kit/log"
+	"github.com/dch1228/go-kit/profile"
 	"github.com/dch1228/go-kit/tracing"
 )
 
@@ -23,6 +24,7 @@ type ServerConfig struct {
 	Env     string `validate:"oneof=local dev prod" default:"local"`
 	Log     log.Config
 	Tracing tracing.Config
+	Profile profile.Config
 }
 
 func Load(path string, v interface{}) error {
@@ -31,11 +33,11 @@ func Load(path string, v interface{}) error {
 		return err
 	}
 
-	if err := yaml.Unmarshal(content, &v); err != nil {
+	if err := yaml.Unmarshal(content, v); err != nil {
 		return err
 	}
 
-	defaults.SetDefaults(&v)
+	defaults.SetDefaults(v)
 
 	if err := validator.New().Struct(v); err != nil {
 		return err

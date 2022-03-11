@@ -2,26 +2,33 @@ package main
 
 import (
 	"context"
+	"flag"
 
 	"github.com/Shopify/sarama"
+	"github.com/dch1228/go-kit/conf"
 	"github.com/dch1228/go-kit/kafka"
-	"github.com/dch1228/go-kit/tracing"
 	"go.opentelemetry.io/otel"
 )
 
-func main() {
-	if err := tracing.Init(tracing.Config{
-		Name:         "kafka-producer",
-		Endpoint:     "http://127.0.0.1:14268/api/traces",
-		SamplerRatio: 1,
-	}); err != nil {
-		panic(err)
-	}
-	defer func() { _ = tracing.Shutdown(context.Background()) }()
+var cfgPath = flag.String("c", "conf.yaml", "Specify the config file")
 
-	cfg := sarama.NewConfig()
-	cfg.Producer.Return.Successes = true
-	producer, err := sarama.NewSyncProducer([]string{"127.0.0.1:9092"}, cfg)
+type Config struct {
+	conf.ServerConfig
+}
+
+func main() {
+	flag.Parse()
+	var cfg Config
+
+	conf.MustLoad(*cfgPath, &cfg)
+
+	// log, trace
+	cfg.MustSetup()
+	defer cfg.Cleanup()
+
+	kcfg := sarama.NewConfig()
+	kcfg.Producer.Return.Successes = true
+	producer, err := sarama.NewSyncProducer([]string{"127.0.0.1:9092"}, kcfg)
 	if err != nil {
 		panic(err)
 	}

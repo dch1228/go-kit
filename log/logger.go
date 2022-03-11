@@ -2,7 +2,10 @@ package log
 
 import (
 	"context"
+	"fmt"
 	"sync"
+
+	klog "github.com/go-kratos/kratos/v2/log"
 )
 
 var (
@@ -66,6 +69,7 @@ func setup(cfg Config) error {
 	}
 
 	global = logger
+	klog.SetLogger(logger)
 	return nil
 }
 
@@ -167,4 +171,27 @@ func (log *Logger) WithCtxFields(fields ...CtxField) *Logger {
 
 func (log *Logger) Sync() error {
 	return log.base.Sync()
+}
+
+// Log 实现 kratos logger
+func (log *Logger) Log(level klog.Level, keyvals ...interface{}) error {
+	if len(keyvals) == 0 || len(keyvals)%2 != 0 {
+		log.Warn("Key values must appear in pairs", Any("keyvals", keyvals))
+		return nil
+	}
+
+	var data []Field
+	for i := 0; i < len(keyvals); i += 2 {
+		data = append(data, Any(fmt.Sprint(keyvals[i]), keyvals[i+1]))
+	}
+
+	switch level {
+	case klog.LevelDebug, klog.LevelInfo:
+		log.Info("", data...)
+	case klog.LevelWarn:
+		log.Warn("", data...)
+	case klog.LevelError, klog.LevelFatal:
+		log.Error("", nil, data...)
+	}
+	return nil
 }
