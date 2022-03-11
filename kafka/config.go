@@ -1,10 +1,10 @@
 package kafka
 
 type Config struct {
-	BootstrapServers []string `mapstructure:"bootstrap-servers"`
+	BootstrapServers []string
 }
 
 type ConsumerConfig struct {
-	GroupID string `mapstructure:"group-id"`
-	Topic   string `mapstructure:"topic"`
+	GroupID string
+	Topic   string
 }
