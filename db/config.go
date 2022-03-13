@@ -7,19 +7,19 @@ import (
 )
 
 type Config struct {
-	Host                  string        `mapstructure:"host"`
-	Username              string        `mapstructure:"username"`
-	Password              string        `mapstructure:"password"`
-	Database              string        `mapstructure:"database"`
-	MaxIdleConnections    int           `mapstructure:"max-idle-connections"`
-	MaxOpenConnections    int           `mapstructure:"max-open-connections"`
-	MaxConnectionLifeTime time.Duration `mapstructure:"max-connection-life-time"`
+	Host                  string
+	Username              string
+	Password              string
+	Database              string
+	MaxIdleConnections    int           `default:"10"`
+	MaxOpenConnections    int           `default:"10"`
+	MaxConnectionLifeTime time.Duration `default:"3m"`
 
 	Log LogConfig `mapstructure:"log"`
 }
 
 type LogConfig struct {
-	Level                     glog.LogLevel `mapstructure:"level"`
-	SlowThreshold             time.Duration `mapstructure:"slow-threshold"`
-	IgnoreRecordNotFoundError bool          `mapstructure:"ignore-record-not-found-error"`
+	Level                     glog.LogLevel `default:"4"`
+	SlowThreshold             time.Duration `default:"1s"`
+	IgnoreRecordNotFoundError bool          `default:"true"`
 }
