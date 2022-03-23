@@ -10,7 +10,7 @@ import (
 )
 
 type Config struct {
-	Enable bool   `default:"true"`
+	Enable bool
 	Addr   string `default:":9090"`
 }
 

@@ -16,6 +16,10 @@ var (
 )
 
 func Setup(cfg Config) error {
+	if !cfg.Enable {
+		return nil
+	}
+
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(cfg.Endpoint)))
 	if err != nil {
 		return err
@@ -34,5 +38,8 @@ func Setup(cfg Config) error {
 }
 
 func Shutdown(ctx context.Context) error {
+	if tp == nil {
+		return nil
+	}
 	return tp.Shutdown(ctx)
 }
